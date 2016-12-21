@@ -82,7 +82,9 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 for (int employee : menuHashTable.broadSearchEmployee(searchBar.getText(), searchType.getSelectedIndex())) {
                     searchTable.addEmployee(menuHashTable.getEmployee(employee));
                 }
-
+                if (searchBar.getText().toLowerCase().replace(" ", "").equals("Enter Search Query ...") || searchBar.getText().replace(" ", "").equals("")) {
+                    refreshTable(menuHashTable);
+                }
                 //displays the new table
                 refreshTable(searchTable);
             }
@@ -111,11 +113,17 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                     //calls the remove method
                     jButton_RemoveActionPerformed(null);
                 }
-                //checks if the key pressed is an e and whether it had a ctrl modifier (CTRL+E)
-                if (ke.getExtendedKeyCode() == 69 && ke.getModifiersEx() == 128){
+                //checks if the key pressed is an 'E' and whether it had a ctrl modifier (CTRL+E)
+                if (ke.getExtendedKeyCode() == KeyEvent.VK_E && ke.getModifiersEx() == 128){
                     //edits employee that was selected
                     jButton_EditActionPerformed(null);
                 }
+                //checks if the key pressed is an 'R' and whether it had a ctrl modifier (CTRL+E)
+                if (ke.getExtendedKeyCode() == KeyEvent.VK_R && ke.getModifiersEx() == 128){
+                    //edits employee that was selected
+                    refreshTable(menuHashTable);
+                }
+                
             }
         });
     }
@@ -867,6 +875,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
             refreshTable(menuHashTable);
         } else if (searchBar.getText().replace(" ", "").equals("")) {
             JOptionPane.showMessageDialog(new JFrame(), "Please enter something into the search bar");
+            refreshTable(menuHashTable);
         } else if (searchType.getSelectedIndex() != 1 && !isNumerical(searchBar.getText())) {
             JOptionPane.showMessageDialog(new JFrame(), "Invalid Search type");
         } else if (searchTable.getAllEmployees() == null) {
