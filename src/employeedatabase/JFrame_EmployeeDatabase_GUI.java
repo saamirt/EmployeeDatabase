@@ -43,7 +43,6 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     public JFrame_EmployeeDatabase_GUI() {
         //initializes gui elements
         initComponents();
-
         //sets up application with initial properties
         changesMade(false);
         JFrame_EmployeeDatabase_GUI.super.setTitle("Employee Database Program - Untitled." + FORMAT);
@@ -471,7 +470,6 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 formKeyPressed(evt);
             }
         });
-        getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
         mainInterface.setMinimumSize(new java.awt.Dimension(800, 600));
         mainInterface.setPreferredSize(new java.awt.Dimension(800, 600));
@@ -512,7 +510,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         jPanel_TopButtonsLayout.setHorizontalGroup(
             jPanel_TopButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel_TopButtonsLayout.createSequentialGroup()
-                .add(searchBar)
+                .add(searchBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(searchType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -643,7 +641,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        getContentPane().add(mainInterface);
+        getContentPane().add(mainInterface, java.awt.BorderLayout.CENTER);
 
         jMenu_File.setText("File");
         jMenu_File.addActionListener(new java.awt.event.ActionListener() {
