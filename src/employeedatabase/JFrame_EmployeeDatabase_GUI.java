@@ -714,11 +714,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     private void JMenuItem_NewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JMenuItem_NewActionPerformed
 
         //checks if changes were made in order to confirm saving the database
-        if (!wereChangesMade) {
-            return;
-
-            //prompts user and, depending on the answer, saves the database
-        } else if (wereChangesMade && YesNoPrompt("", "Would you like to save your database?") == JOptionPane.YES_OPTION) {
+        if (wereChangesMade && YesNoPrompt("", "Would you like to save your database?") == JOptionPane.YES_OPTION) {
             JMenuItem_SaveActionPerformed(evt);
         }
 
