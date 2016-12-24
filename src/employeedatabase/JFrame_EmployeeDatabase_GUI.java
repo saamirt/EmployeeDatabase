@@ -147,19 +147,17 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
 
         //creates new variables for file reading and compiling the text together
         String fileLine;
-        String[] compiledText = null;
-        int x = 0;
+        ArrayList<String> compiledText = new ArrayList();
         //reads a line and adds it to the 'compiledText' variable
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
             //makes sure the line is not null (while also storing the text in a variable)
             while ((fileLine = bufferedReader.readLine()) != null) {
-                compiledText[x] = fileLine + "\n";
-                x++;
+                compiledText.add(fileLine);
             }
         }
 
         //returns the final string
-        return compiledText;
+        return compiledText.toArray(new String[compiledText.size()]);
     }
 
     @SuppressWarnings("unchecked")
@@ -767,27 +765,27 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                         case 7:
                             System.out.println("full time employee added");
                             menuHashTable.addEmployee(new FullTimeEmployee(
-                                    Integer.parseInt(employeeAttributes[1]),
+                                    Integer.parseInt(employeeAttributes[0]),
+                                    employeeAttributes[1],
                                     employeeAttributes[2],
-                                    employeeAttributes[3],
-                                    Integer.parseInt(employeeAttributes[4]),
+                                    Integer.parseInt(employeeAttributes[3]),
+                                    Float.parseFloat(employeeAttributes[4]),
                                     Float.parseFloat(employeeAttributes[5]),
-                                    Float.parseFloat(employeeAttributes[6]),
-                                    Integer.parseInt(employeeAttributes[7])
+                                    Integer.parseInt(employeeAttributes[6])
                             ));
                             break;
                         case 9:
                             System.out.println("part time employee added");
                             menuHashTable.addEmployee(new PartTimeEmployee(
-                                    Integer.parseInt(employeeAttributes[1]),
+                                    Integer.parseInt(employeeAttributes[0]),
+                                    employeeAttributes[1],
                                     employeeAttributes[2],
-                                    employeeAttributes[3],
-                                    Integer.parseInt(employeeAttributes[4]),
+                                    Integer.parseInt(employeeAttributes[3]),
+                                    Float.parseFloat(employeeAttributes[4]),
                                     Float.parseFloat(employeeAttributes[5]),
-                                    Float.parseFloat(employeeAttributes[6]),
+                                    Integer.parseInt(employeeAttributes[6]),
                                     Integer.parseInt(employeeAttributes[7]),
-                                    Integer.parseInt(employeeAttributes[8]),
-                                    Integer.parseInt(employeeAttributes[9])
+                                    Integer.parseInt(employeeAttributes[8])
                             ));
                             break;
                         default:
@@ -1281,8 +1279,6 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     }
 
     private void refreshTable(HashTable menuHashTable) {
-        //clears search bar
-        searchBar.setText("");
         //hides the table during changes
         EmployeeTable.setVisible(false);
 
