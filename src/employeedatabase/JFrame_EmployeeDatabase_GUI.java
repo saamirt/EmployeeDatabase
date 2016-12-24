@@ -1,3 +1,14 @@
+/**********
+
+NAME:                              Aamir Tahir & Varun Ramanathan
+STUDENT NUMBER:                    605973 & 505041
+
+ICS4U0-A, Dec 2016
+
+THIS FILE IS PART OF THE PROGRAM:  Employee Database
+
+**********/
+
 package employeedatabase;
 
 //imports
@@ -12,6 +23,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -30,14 +42,15 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
      * Creates new form JFrame_EmployeeDatabase_GUI
      */
     //declaring variables for database organization
-    String DELIMITER = ";";
-    String FORMAT = "DUTTON";
-    String FORMATEXPANDED = "Database Universal Text Traversing Operators Network";
+    final String DELIMITER = ";";
+    final String FILEEXTENSION = "DUTTON";
+    final String FILEEXTENSIONEXPANDED = "Database Universal Text Traversing Operators Network";
 
     //declaring variables for global application usage
-    File activeFile;
-    HashTable menuHashTable;
-    Boolean wereChangesMade;
+    private File activeFile;
+    private HashTable menuHashTable;
+    private Boolean wereChangesMade;
+    private Boolean firstSearch = true;
 
     //class constructor
     public JFrame_EmployeeDatabase_GUI() {
@@ -45,9 +58,9 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         initComponents();
         //sets up application with initial properties
         changesMade(false);
-        JFrame_EmployeeDatabase_GUI.super.setTitle("Employee Database Program - Untitled." + FORMAT);
+        JFrame_EmployeeDatabase_GUI.super.setTitle("Employee Database Program - Untitled." + FILEEXTENSION);
         EmployeeTable.getTableHeader().setReorderingAllowed(false);
-        fileChooser.setFileFilter(new FileNameExtensionFilter(FORMATEXPANDED + " (*." + FORMAT + ")", FORMAT));
+        fileChooser.setFileFilter(new FileNameExtensionFilter(FILEEXTENSIONEXPANDED + " (*." + FILEEXTENSION + ")", FILEEXTENSION));
 
         //creates main hashtable
         menuHashTable = new HashTable(2);
@@ -81,11 +94,13 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 for (int employee : menuHashTable.broadSearchEmployee(searchBar.getText(), searchType.getSelectedIndex())) {
                     searchTable.addEmployee(menuHashTable.getEmployee(employee));
                 }
-                if (searchBar.getText().toLowerCase().replace(" ", "").equals("Enter Search Query ...") || searchBar.getText().replace(" ", "").equals("")) {
-                    refreshTable(menuHashTable);
-                }
                 //displays the new table
                 refreshTable(searchTable);
+                if (searchBar.getText().toLowerCase().equals("enter search query ...") && firstSearch == true || searchBar.getText().replace(" ", "").equals("")) {
+                    refreshTable(menuHashTable);
+                }else{
+                    firstSearch = false;
+                }
             }
         });
 
@@ -128,22 +143,23 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     }
 
     //method for reading a file
-    private String readFile(String filePath) throws FileNotFoundException, IOException {
+    private String[] readFile(String filePath) throws FileNotFoundException, IOException {
 
         //creates new variables for file reading and compiling the text together
         String fileLine;
-        String compiledText = "";
-
+        String[] compiledText = null;
+        int x = 0;
         //reads a line and adds it to the 'compiledText' variable
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
             //makes sure the line is not null (while also storing the text in a variable)
             while ((fileLine = bufferedReader.readLine()) != null) {
-                compiledText += fileLine + "\n";
+                compiledText[x] = fileLine + "\n";
+                x++;
             }
         }
 
         //returns the final string
-        return (compiledText);
+        return compiledText;
     }
 
     @SuppressWarnings("unchecked")
@@ -222,6 +238,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         employeeNumberLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         employeeNumberLabel.setText("Employee Number");
 
+        employeeNumberField.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
         employeeNumberField.setEditor(new javax.swing.JSpinner.NumberEditor(employeeNumberField, "######"));
 
         deductionsRateLabel.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -510,7 +527,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         jPanel_TopButtonsLayout.setHorizontalGroup(
             jPanel_TopButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel_TopButtonsLayout.createSequentialGroup()
-                .add(searchBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
+                .add(searchBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 642, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(searchType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -524,6 +541,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 .add(searchType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
 
+        EmployeeTable.setAutoCreateRowSorter(true);
         EmployeeTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -547,6 +565,8 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        EmployeeTable.setToolTipText("");
+        EmployeeTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         EmployeeTable.setMinimumSize(new java.awt.Dimension(40, 0));
         EmployeeTable.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
@@ -595,13 +615,13 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         jPanel_BottomButtonsLayout.setHorizontalGroup(
             jPanel_BottomButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel_BottomButtonsLayout.createSequentialGroup()
-                .add(jButton_Add, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+                .add(jButton_Add, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jButton_Edit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
+                .add(jButton_Edit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jButton_Remove, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
+                .add(jButton_Remove, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jButton_Refresh, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
+                .add(jButton_Refresh, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
                 .add(0, 0, 0))
         );
         jPanel_BottomButtonsLayout.setVerticalGroup(
@@ -625,7 +645,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 .add(10, 10, 10)
                 .add(mainInterfaceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jPanel_TopButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jScrollPane_EmployeeTable, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 780, Short.MAX_VALUE)
+                    .add(jScrollPane_EmployeeTable, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
                     .add(jPanel_BottomButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .add(10, 10, 10))
         );
@@ -635,7 +655,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 .add(10, 10, 10)
                 .add(jPanel_TopButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(6, 6, 6)
-                .add(jScrollPane_EmployeeTable, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
+                .add(jScrollPane_EmployeeTable, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(jPanel_BottomButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -705,7 +725,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
 
         setJMenuBar(TopMenu);
 
-        setSize(new java.awt.Dimension(816, 639));
+        setSize(new java.awt.Dimension(866, 689));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -732,8 +752,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 System.out.println(selectedFile.getAbsolutePath());
 
                 //reads the file for 
-                String fileText = readFile(selectedFile.getAbsolutePath());
-                String[] fileTextLines = fileText.split("\n");
+                String[] fileTextLines = readFile(selectedFile.getAbsolutePath());
 
                 //clear the database
                 removeAllEmployees();
@@ -745,10 +764,9 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
 
                     // Adds employee (part or full time is based on number of attributes)
                     switch (employeeAttributes.length) {
-                        case 8:
+                        case 7:
                             System.out.println("full time employee added");
                             menuHashTable.addEmployee(new FullTimeEmployee(
-                                    Boolean.parseBoolean(employeeAttributes[0]),
                                     Integer.parseInt(employeeAttributes[1]),
                                     employeeAttributes[2],
                                     employeeAttributes[3],
@@ -758,10 +776,9 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                                     Integer.parseInt(employeeAttributes[7])
                             ));
                             break;
-                        case 10:
+                        case 9:
                             System.out.println("part time employee added");
                             menuHashTable.addEmployee(new PartTimeEmployee(
-                                    Boolean.parseBoolean(employeeAttributes[0]),
                                     Integer.parseInt(employeeAttributes[1]),
                                     employeeAttributes[2],
                                     employeeAttributes[3],
@@ -837,9 +854,9 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
             File selectedFile = fileChooser.getSelectedFile();
 
             //makes sure that file is saved in a valid format
-            if (!selectedFile.getAbsolutePath().endsWith("." + FORMAT.toLowerCase())) {
+            if (!selectedFile.getAbsolutePath().endsWith("." + FILEEXTENSION.toLowerCase())) {
                 //adds a format at the end if not included
-                selectedFile = new File(selectedFile.getAbsolutePath() + "." + FORMAT);
+                selectedFile = new File(selectedFile.getAbsolutePath() + "." + FILEEXTENSION);
             }
 
             //checks if a valid selection was made, and if file exists, it prompts to overwrite
@@ -859,14 +876,18 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
         HashTable searchTable = new HashTable(2);
+        //searches for all matching employees
         for (int employee : menuHashTable.broadSearchEmployee(searchBar.getText(), searchType.getSelectedIndex())) {
             searchTable.addEmployee(menuHashTable.getEmployee(employee));
         }
+        //updates table
         refreshTable(searchTable);
-        if (menuHashTable.getAllEmployees() == null) {
-            JOptionPane.showMessageDialog(new JFrame(), "The database is empty");
-        } else if (searchBar.getText().toLowerCase().replace(" ", "").equals("Enter Search Query ...")) {
+        //checks for errors
+        if (searchBar.getText().toLowerCase().equals("enter search query ...") && firstSearch == true && firstSearch == true) {
             refreshTable(menuHashTable);
+            return;
+        } else if (menuHashTable.getAllEmployees() == null) {
+            JOptionPane.showMessageDialog(new JFrame(), "The database is empty");
         } else if (searchBar.getText().replace(" ", "").equals("")) {
             JOptionPane.showMessageDialog(new JFrame(), "Please enter something into the search bar");
             refreshTable(menuHashTable);
@@ -875,6 +896,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         } else if (searchTable.getAllEmployees() == null) {
             JOptionPane.showMessageDialog(new JFrame(), "No employee matches your search");
         }
+        firstSearch = false;
     }//GEN-LAST:event_searchButtonActionPerformed
 
     private void searchBarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBarActionPerformed
@@ -946,7 +968,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         //checks for a blank last name
         if (lastNameField.getText().equals("")) {
             //adds to error string
-            error += "You need to enter a last name!\n";
+            error += "You need to enter a first name!\n";
         }
 
         //checks if employee number is negative
@@ -968,7 +990,6 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
 
                 //adds a full time employee
                 menuHashTable.addEmployee(new FullTimeEmployee(
-                        true,
                         objToInt(employeeNumberField.getValue()),
                         firstNameField.getText(),
                         lastNameField.getText(),
@@ -981,7 +1002,6 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
 
                 //adds a part time employee
                 menuHashTable.addEmployee(new PartTimeEmployee(
-                        false,
                         objToInt(employeeNumberField.getValue()),
                         firstNameField.getText(),
                         lastNameField.getText(),
@@ -1073,7 +1093,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         //checks if changes were made and if user wants to save (only prompts if changes were made)
         if (wereChangesMade && (saveChange = YesNoPrompt("You have unsaved data", "Do you want to save your changes before exiting?")) == JOptionPane.YES_OPTION) {
             //calls save method
-            saveButtonActionPerformed(evt);
+            JMenuItem_SaveActionPerformed(evt);
         } else if (saveChange == JOptionPane.CLOSED_OPTION) {
             //exits method before it closes application
             return;
@@ -1083,21 +1103,41 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_JMenuItem_QuitActionPerformed
 
     private void jButton_RemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_RemoveActionPerformed
-        //checks to see if any employees are selected in the table
+        //makes sure atleast one person is selected to delete
         if (EmployeeTable.getSelectedRowCount() > 0) {
+            //new list for employees that are selected to be removed
+            ArrayList<Integer> employeesToRemove = new ArrayList<>(EmployeeTable.getSelectedRowCount());
+            
+            //string to display when confirming the deletion of the selected employee(s)
+            String confirmText = "Are you sure you want to delete the following employee";
+            //makes employee plural if multiple employees are selected
+            if (EmployeeTable.getSelectedRowCount()>1){
+                confirmText += "s";
+            }
+            confirmText += "?\n";
+            
             //iterates through employees selected
             for (int a : EmployeeTable.getSelectedRows()) {
-                //removes employee selected
-                menuHashTable.removeEmployee(objToInt(EmployeeTable.getValueAt(a, 2)));
+                //adds employee to list
+                employeesToRemove.add(objToInt(EmployeeTable.getValueAt(a, 2)));
+                //adding employee to confirm message
+                confirmText += ((String) EmployeeTable.getValueAt(a, 0)) + " " + ((String) EmployeeTable.getValueAt(a, 1)) + "\n";
             }
-            //updates table
-            refreshTable(menuHashTable);
+            //confirms with user before deleting
+            if (YesNoPrompt("Confirm Deletion", confirmText) == JOptionPane.YES_OPTION){
+                for (int b : employeesToRemove){
+                    //removes employee selected
+                    menuHashTable.removeEmployee(b);
+                }
+                //updates table
+                refreshTable(menuHashTable);
+            }
+        //handles invalid selection
         } else {
             JOptionPane.showMessageDialog(new JFrame(), "You must have at least one employee selected from the table");
         }
         //updates application for changes
         changesMade(true);
-
     }//GEN-LAST:event_jButton_RemoveActionPerformed
 
     private void searchTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchTypeActionPerformed
@@ -1116,7 +1156,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_searchBarKeyTyped
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
-        System.out.println(evt.getKeyChar());
+
     }//GEN-LAST:event_formKeyPressed
 
     private void jMenu_FileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu_FileActionPerformed
@@ -1241,6 +1281,8 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     }
 
     private void refreshTable(HashTable menuHashTable) {
+        //clears search bar
+        searchBar.setText("");
         //hides the table during changes
         EmployeeTable.setVisible(false);
 

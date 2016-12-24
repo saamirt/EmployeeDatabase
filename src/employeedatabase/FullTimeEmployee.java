@@ -1,23 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package employeedatabase;
+/**********
 
-/**
- *
- * @author Aamir
- */
+NAME:                              Aamir Tahir & Varun Ramanathan
+STUDENT NUMBER:                    605973 & 505041
+
+ICS4U0-A, Dec 2016
+
+THIS FILE IS PART OF THE PROGRAM:  Employee Database
+
+**********/
+
+package employeedatabase;
 
 public class FullTimeEmployee extends EmployeeInfo {
 	
-	public FullTimeEmployee() {
-        super();
-	}
-
-	public FullTimeEmployee(boolean isFullTime, int employeeNumber, String firstName, String lastName, int sex, double salary,double deductionsRate,int workLocation) {
-		super(isFullTime, employeeNumber, firstName, lastName, sex, salary,deductionsRate,workLocation);
+        //full time employee class is basically the same as employeeinfo class
+        //takes employee info constructor
+	public FullTimeEmployee(int employeeNumber, String firstName, String lastName, int sex, double salary,double deductionsRate,int workLocation) {
+		super(employeeNumber, firstName, lastName, sex, salary,deductionsRate,workLocation);
 	}
 
 }

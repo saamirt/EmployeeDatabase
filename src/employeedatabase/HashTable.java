@@ -1,3 +1,14 @@
+/**********
+
+NAME:                              Aamir Tahir & Varun Ramanathan
+STUDENT NUMBER:                    605973 & 505041
+
+ICS4U0-A, Dec 2016
+
+THIS FILE IS PART OF THE PROGRAM:  Employee Database
+
+**********/
+
 package employeedatabase;
 
 import java.awt.event.MouseAdapter;
@@ -5,27 +16,35 @@ import java.util.ArrayList;
 
 public class HashTable {
         
+        //creates first array list
         private ArrayList<EmployeeInfo>[] buckets;
+        
+        //variables for number of employees
         private int numEmployees = 0;
         
         // CONSTRUCTOR
         @SuppressWarnings({ "unchecked", "rawtypes" })
-		public HashTable(int howManyBuckets) {
-                buckets = new ArrayList[howManyBuckets];
-
-                for (int x = 0; x < howManyBuckets; x++) {
-                    buckets[x] = new ArrayList<EmployeeInfo>();
-                }
+        //accepts number of buckets as a parameter
+        public HashTable(int howManyBuckets) {
+            //initializes the arraylist to the size of the number of buckets chosed
+            buckets = new ArrayList[howManyBuckets];
+            
+            //creates a new arraylist for each bucket to store employees in
+            for (int x = 0; x < howManyBuckets; x++) {
+                buckets[x] = new ArrayList<EmployeeInfo>();
+            }
         }
         
+        //calculates bucket of employee
         public int calcBucket(int keyValue) {
                 return(keyValue % buckets.length);
         }
         
-        public boolean addEmployee(EmployeeInfo theEmployee) {
+        public void addEmployee(EmployeeInfo theEmployee) {
+            //adds employee
             buckets[calcBucket(theEmployee.getEmployeeNumber())].add(theEmployee);
+            //increases number of employees
             numEmployees++;
-            return true;
         }
         
         public int searchEmployee(int employeeNum) {
