@@ -1,7 +1,7 @@
 /**********
 
 NAME:                              Aamir Tahir & Varun Ramanathan
-STUDENT NUMBER:                    605973 & 505041
+STUDENT NUMBER:                    605973        505041
 
 ICS4U0-A, Dec 2016
 
