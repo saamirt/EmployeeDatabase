@@ -47,20 +47,27 @@ public class HashTable {
             numEmployees++;
         }
         
+        //searches for employee
         public int searchEmployee(int employeeNum) {
+            //cycles through employees
             for (int x = 0;x<buckets[calcBucket(employeeNum)].size();x++){
+                    //checks for the employee
                     if (buckets[calcBucket(employeeNum)].get(x).getEmployeeNumber() == employeeNum){
                         return x;
                     }
             }
+            //returns -1 when employee isn't found
             return -1;
         }
-        
+        //broad search method (for multiple employee search)
         public ArrayList<Integer> broadSearchEmployee(String searchItem,int searchType){
             ArrayList<Integer> matchingEmployees = new ArrayList<Integer>();
             String currentEmpSearchValue = "";
+            //cycles through the buckets
             for (int a = 0; a < buckets.length;a++){
+                //cycles through employees in each bucket
                 for (int b = 0; b<buckets[a].size();b++){
+                    //alters search item based on what type of search user picks
                     switch (searchType){
                         case 0:
                             currentEmpSearchValue = String.valueOf(buckets[a].get(b).getEmployeeNumber());
@@ -75,6 +82,7 @@ public class HashTable {
                             currentEmpSearchValue = String.valueOf(buckets[a].get(b).getPay());
                             break;
                     }
+                    //adds matching employees to the arraylist
                     if (currentEmpSearchValue.startsWith(searchItem.replace(" ","").toLowerCase())){
                         matchingEmployees.add(buckets[a].get(b).getEmployeeNumber());
                     }
@@ -83,79 +91,101 @@ public class HashTable {
             return matchingEmployees; 
         }
         
+        //gets employee number of an employee
         public EmployeeInfo getEmployee(int employeeNumber){
+        //if user doesn't exist, method returns null
         if (searchEmployee(employeeNumber) == -1){
             return null;
         }
         else {
+            //returns employee number by searching for the employee
             return buckets[calcBucket(employeeNumber)].get(searchEmployee(employeeNumber));
         }
     }
-
-        public void removeEmployee(int employeeNum) {
-                System.out.println(calcBucket(employeeNum));
-        	if (searchEmployee(employeeNum) != -1){
-                        numEmployees--;
-                        buckets[calcBucket(employeeNum)].remove(buckets[calcBucket(employeeNum)].get(searchEmployee(employeeNum)));
-        	} else {
-        		System.out.println("Employee does not exist");
-        	}
-        }
-        
-        public void removeAllEmployees (){
-            for (int a = 0;a<buckets.length;a++){
-                System.out.println("a = " + a);
-                int numBucketEmployees = buckets[a].size();
-                for (int b = 0; b< numBucketEmployees ;b++){
+    
+    //remove employee
+    public void removeEmployee(int employeeNum) {
+            System.out.println(calcBucket(employeeNum));
+            //checks if employee exists
+            if (searchEmployee(employeeNum) != -1){
+                //reduces number of employees
+                numEmployees--;
+                //removes employee
+                buckets[calcBucket(employeeNum)].remove(buckets[calcBucket(employeeNum)].get(searchEmployee(employeeNum)));
+            } else {
+                //error message if user doesnt exist
+                System.out.println("Employee does not exist");
+            }
+    }
+    //removes all employees
+    public void removeAllEmployees (){
+        //cycles through buckets
+        for (int a = 0;a<buckets.length;a++){
+            System.out.println("a = " + a);
+            //resets number of employees
+            int numBucketEmployees = buckets[a].size();
+            //cycles through employees
+            for (int b = 0; b< numBucketEmployees ;b++){
                 System.out.println("b = " + b);
-                    removeEmployee(buckets[a].get(0).getEmployeeNumber());
-                }
+                //removes each employee
+                removeEmployee(buckets[a].get(0).getEmployeeNumber());
             }
-            System.out.println("Deleted all Employees");
-        }    
-        
-        public void displayContents() {
-        	for (int a = 0;a<buckets.length;a++){
-                    System.out.println("Bucket " + a + ":");
-                    for (int b = 0; b< buckets[a].size();b++){
-            		System.out.print("Value of slot " + b + ": ");
-        		System.out.println(buckets[a].get(b).getFirstName());
-                    }
-        	System.out.println("");
-        	}
         }
-        public String[] listEmployees(){
-            if (numEmployees == 0){
-                return null;
+        System.out.println("Deleted all Employees");
+    }    
+    //displays contents of hash table
+    public void displayContents() {
+        //cycles through buckets
+        for (int a = 0;a<buckets.length;a++){
+            System.out.println("Bucket " + a + ":");
+            //cycles through employees
+            for (int b = 0; b< buckets[a].size();b++){
+                System.out.print("Value of slot " + b + ": ");
+                //displays first name
+                System.out.println(buckets[a].get(b).getFirstName());
             }
-            
-            int currentEmployee = 0;
-            String[] empList = new String[numEmployees];
-            EmployeeInfo[] employeeArray = getAllEmployees();
-            for (EmployeeInfo employee: employeeArray) {
-                empList[currentEmployee] = employee.getEmployeeString();
+        System.out.println("");
+        }
+    }
+    //lists employees
+    public String[] listEmployees(){
+        //checks if list is empty
+        if (numEmployees == 0){
+            return null;
+        }
+        int currentEmployee = 0;
+        //creates a list for employees
+        String[] empList = new String[numEmployees];
+        EmployeeInfo[] employeeArray = getAllEmployees();
+        //cycles through employees
+        for (EmployeeInfo employee: employeeArray) {
+            //gets employee information string
+            empList[currentEmployee] = employee.getEmployeeString();
+            //moves to next employee
+            currentEmployee++;
+        }
+        return empList;
+    }
+    
+    //gets all employees
+    public EmployeeInfo[] getAllEmployees(){
+        //checks if table is empty
+        if (numEmployees == 0){
+            return null;
+        }
+
+        int currentEmployee = 0;
+        EmployeeInfo[] employeeArray = new EmployeeInfo[numEmployees];
+        //cycles through buckets
+        for (ArrayList<EmployeeInfo> bucket : buckets) {
+            //cyclese through employees
+            for (int b = 0; b < bucket.size(); b++) {
+                //gets employee object
+                employeeArray[currentEmployee] = bucket.get(b);
+                //moves to next employee
                 currentEmployee++;
             }
-            return empList;
         }
-        
-        public EmployeeInfo[] getAllEmployees(){
-            if (numEmployees == 0){
-                return null;
-            }
-            
-            int currentEmployee = 0;
-            EmployeeInfo[] employeeArray = new EmployeeInfo[numEmployees];
-            for (ArrayList<EmployeeInfo> bucket : buckets) {
-                for (int b = 0; b < bucket.size(); b++) {
-                    employeeArray[currentEmployee] = bucket.get(b);
-                    currentEmployee++;
-                }
-            }
-            return employeeArray;
-        }
-
-    void addMouseListener(MouseAdapter mouseAdapter) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return employeeArray;
     }
 }
