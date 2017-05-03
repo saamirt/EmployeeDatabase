@@ -10,8 +10,8 @@ public class ArchivedEmployee{
     private EmployeeInfo employee2 = null;
     private int actionType;
     
-    public ArchivedEmployee(EmployeeInfo employee,int actionType){
-        this.employee1 = employee;
+    public ArchivedEmployee(EmployeeInfo employee1,int actionType){
+        this.employee1 = employee1;
         this.actionType = actionType;
     }
     

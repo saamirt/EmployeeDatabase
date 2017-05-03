@@ -260,11 +260,16 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         jMenu_Help = new javax.swing.JMenu();
         jMenuItem_Guide = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
-        undo = new javax.swing.JMenuItem();
-        redo = new javax.swing.JMenuItem();
+        jMenuItem_Add = new javax.swing.JMenuItem();
+        jMenuItem_Edit = new javax.swing.JMenuItem();
+        jMenuItem_Remove = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem_Undo = new javax.swing.JMenuItem();
+        jMenuItem_Redo = new javax.swing.JMenuItem();
 
         employeeFormPanel.setBounds(new java.awt.Rectangle(0, 0, 450, 430));
         employeeFormPanel.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - employeeFormPanel.getWidth()) / 2,(Toolkit.getDefaultToolkit().getScreenSize().height - employeeFormPanel.getHeight()) / 2);
+        employeeFormPanel.setMaximumSize(new java.awt.Dimension(450, 425));
         employeeFormPanel.setMinimumSize(new java.awt.Dimension(450, 425));
         employeeFormPanel.setName("employeeFormPanel"); // NOI18N
         employeeFormPanel.setResizable(false);
@@ -386,7 +391,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         annualSalaryLabel.setText("Annual Salary");
 
         annualSalaryField.setModel(new javax.swing.SpinnerNumberModel(20000.0d, 5.0d, null, 1000d));
-        annualSalaryField.setModel(new javax.swing.SpinnerNumberModel());
+        annualSalaryField.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
 
         org.jdesktop.layout.GroupLayout fullTimeEmployeePanelLayout = new org.jdesktop.layout.GroupLayout(fullTimeEmployeePanel);
         fullTimeEmployeePanel.setLayout(fullTimeEmployeePanelLayout);
@@ -791,23 +796,51 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
 
         jMenu1.setText("Edit");
 
-        undo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
-        undo.setText("Undo");
-        undo.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItem_Add.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem_Add.setText("Add");
+        jMenuItem_Add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                undoActionPerformed(evt);
+                jMenuItem_AddActionPerformed(evt);
             }
         });
-        jMenu1.add(undo);
+        jMenu1.add(jMenuItem_Add);
 
-        redo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
-        redo.setText("Redo");
-        redo.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItem_Edit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem_Edit.setText("Edit");
+        jMenuItem_Edit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                redoActionPerformed(evt);
+                jMenuItem_EditActionPerformed(evt);
             }
         });
-        jMenu1.add(redo);
+        jMenu1.add(jMenuItem_Edit);
+
+        jMenuItem_Remove.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
+        jMenuItem_Remove.setText("Remove");
+        jMenuItem_Remove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem_RemoveActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem_Remove);
+        jMenu1.add(jSeparator4);
+
+        jMenuItem_Undo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem_Undo.setText("Undo");
+        jMenuItem_Undo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem_UndoActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem_Undo);
+
+        jMenuItem_Redo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem_Redo.setText("Redo");
+        jMenuItem_Redo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem_RedoActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem_Redo);
 
         TopMenu.add(jMenu1);
 
@@ -1075,11 +1108,6 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         //creates an error string to add on to
         String error = "";
 
-        //removes the current employee if user is modifying (in order to avoid conflicts)
-        if (employeeFormPanel.getTitle().equals(MODIFY_EMPLOYEE_TITLE)) {
-            menuHashTable.removeEmployee(objToInt(employeeNumberField.getValue()));
-        }
-
         //checks for whether employee already exists
         try {
             if (menuHashTable.searchEmployee((Integer) employeeNumberField.getValue()) != -1) {
@@ -1119,7 +1147,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
             //removes the current employee if user is modifying (in order to avoid conflicts)
             if (employeeFormPanel.getTitle().equals(MODIFY_EMPLOYEE_TITLE)) {
 
-                menuHashTable.removeEmployee(objToInt(employeeNumberField.getValue()));
+                menuHashTable.removeEmployee(undoEmployees.getLast().getEmployee1().getEmployeeNumber());
             }
         
             //checks which employee type panel was currently selected
@@ -1397,7 +1425,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem_GuideActionPerformed
 
-    private void undoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoActionPerformed
+    private void jMenuItem_UndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_UndoActionPerformed
         if (!undoEmployees.isEmpty()){
             System.out.println("Before Undo Archived List:");
             for (ArchivedEmployee a : undoEmployees){
@@ -1430,9 +1458,9 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 System.out.println("name: " + a.getEmployee1().getFirstName() + ", type: " + a.getActionType());
             }
         }
-    }//GEN-LAST:event_undoActionPerformed
+    }//GEN-LAST:event_jMenuItem_UndoActionPerformed
 
-    private void redoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_redoActionPerformed
+    private void jMenuItem_RedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_RedoActionPerformed
         if (!redoEmployees.isEmpty()){
             System.out.println("Before Redo Archived List:");
             for (ArchivedEmployee a : redoEmployees){
@@ -1465,7 +1493,19 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 System.out.println("name: " + a.getEmployee1().getFirstName() + ", type: " + a.getActionType());
             }
         }
-    }//GEN-LAST:event_redoActionPerformed
+    }//GEN-LAST:event_jMenuItem_RedoActionPerformed
+
+    private void jMenuItem_AddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_AddActionPerformed
+        jButton_AddActionPerformed(evt);
+    }//GEN-LAST:event_jMenuItem_AddActionPerformed
+
+    private void jMenuItem_EditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_EditActionPerformed
+        jButton_EditActionPerformed(evt);
+    }//GEN-LAST:event_jMenuItem_EditActionPerformed
+
+    private void jMenuItem_RemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_RemoveActionPerformed
+        jButton_RemoveActionPerformed(evt);
+    }//GEN-LAST:event_jMenuItem_RemoveActionPerformed
 
     //main method initializes the application and sets the look and feel
     public static void main(String args[]) {
@@ -1530,7 +1570,12 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton_Refresh;
     private javax.swing.JButton jButton_Remove;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuItem jMenuItem_Add;
+    private javax.swing.JMenuItem jMenuItem_Edit;
     private javax.swing.JMenuItem jMenuItem_Guide;
+    private javax.swing.JMenuItem jMenuItem_Redo;
+    private javax.swing.JMenuItem jMenuItem_Remove;
+    private javax.swing.JMenuItem jMenuItem_Undo;
     private javax.swing.JMenu jMenu_File;
     private javax.swing.JMenu jMenu_File1;
     private javax.swing.JMenu jMenu_Help;
@@ -1540,18 +1585,17 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JTextField lastNameField;
     private javax.swing.JLabel lastNameLabel;
     private javax.swing.JPanel mainInterface;
     private javax.swing.JPanel partTimeEmployeePanel;
-    private javax.swing.JMenuItem redo;
     private javax.swing.JButton saveButton;
     private javax.swing.JTextField searchBar;
     private javax.swing.JButton searchButton;
     private javax.swing.JComboBox<String> searchType;
     private javax.swing.JComboBox<String> sexField;
     private javax.swing.JLabel sexLabel;
-    private javax.swing.JMenuItem undo;
     private javax.swing.JSpinner weeksPerYearField;
     private javax.swing.JLabel weeksPerYearLabel;
     private javax.swing.JComboBox<String> workLocationField;
