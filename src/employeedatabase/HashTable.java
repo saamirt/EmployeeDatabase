@@ -105,7 +105,7 @@ public class HashTable {
     
     //remove employee
     public void removeEmployee(int employeeNum) {
-            System.out.println(calcBucket(employeeNum));
+            //System.out.println(calcBucket(employeeNum));
             //checks if employee exists
             if (searchEmployee(employeeNum) != -1){
                 //reduces number of employees

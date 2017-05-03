@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -84,11 +85,15 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     //declaring variables for global application usage
     private File activeFile;
     private HashTable menuHashTable;
+    private LinkedList<ArchivedEmployee> undoEmployees;
+    private LinkedList<ArchivedEmployee> redoEmployees;
     private Boolean wereChangesMade;
     private Boolean firstSearch = true;
 
     //class constructor
     public JFrame_EmployeeDatabase_GUI() {
+        undoEmployees = new LinkedList<>();
+        redoEmployees = new LinkedList<>();
         //initializes gui elements
         initComponents();
         //sets up application with initial properties
@@ -254,10 +259,12 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         JMenuItem_Quit = new javax.swing.JMenuItem();
         jMenu_Help = new javax.swing.JMenu();
         jMenuItem_Guide = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        undo = new javax.swing.JMenuItem();
+        redo = new javax.swing.JMenuItem();
 
         employeeFormPanel.setBounds(new java.awt.Rectangle(0, 0, 450, 430));
         employeeFormPanel.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - employeeFormPanel.getWidth()) / 2,(Toolkit.getDefaultToolkit().getScreenSize().height - employeeFormPanel.getHeight()) / 2);
-        employeeFormPanel.setMaximumSize(new java.awt.Dimension(450, 425));
         employeeFormPanel.setMinimumSize(new java.awt.Dimension(450, 425));
         employeeFormPanel.setName("employeeFormPanel"); // NOI18N
         employeeFormPanel.setResizable(false);
@@ -664,9 +671,9 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jButton_Edit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jButton_Remove, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
+                .add(jButton_Remove, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jButton_Refresh, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+                .add(jButton_Refresh, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
                 .add(0, 0, 0))
         );
         jPanel_BottomButtonsLayout.setVerticalGroup(
@@ -700,7 +707,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 .add(10, 10, 10)
                 .add(jPanel_TopButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(6, 6, 6)
-                .add(jScrollPane_EmployeeTable, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
+                .add(jScrollPane_EmployeeTable)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(jPanel_BottomButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -782,6 +789,28 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
 
         TopMenu.add(jMenu_Help);
 
+        jMenu1.setText("Edit");
+
+        undo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
+        undo.setText("Undo");
+        undo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                undoActionPerformed(evt);
+            }
+        });
+        jMenu1.add(undo);
+
+        redo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
+        redo.setText("Redo");
+        redo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                redoActionPerformed(evt);
+            }
+        });
+        jMenu1.add(redo);
+
+        TopMenu.add(jMenu1);
+
         setJMenuBar(TopMenu);
 
         setSize(new java.awt.Dimension(816, 639));
@@ -837,6 +866,18 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                                     Float.parseFloat(employeeAttributes[5]),
                                     Integer.parseInt(employeeAttributes[6])
                             ));
+                            
+                            //adds to archived employee table
+                            undoEmployees.add(new ArchivedEmployee(new FullTimeEmployee(
+                                    Integer.parseInt(employeeAttributes[0]),
+                                    employeeAttributes[1],
+                                    employeeAttributes[2],
+                                    Integer.parseInt(employeeAttributes[3]),
+                                    Float.parseFloat(employeeAttributes[4]),
+                                    Float.parseFloat(employeeAttributes[5]),
+                                    Integer.parseInt(employeeAttributes[6])
+                            ),1));
+                            
                             break;
                         case 9:
                             //for debugging purposes
@@ -853,6 +894,20 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                                     Integer.parseInt(employeeAttributes[7]),
                                     Integer.parseInt(employeeAttributes[8])
                             ));
+                            
+                            //adds to archived employee table
+                            undoEmployees.add(new ArchivedEmployee(new PartTimeEmployee(
+                                    Integer.parseInt(employeeAttributes[0]),
+                                    employeeAttributes[1],
+                                    employeeAttributes[2],
+                                    Integer.parseInt(employeeAttributes[3]),
+                                    Float.parseFloat(employeeAttributes[4]),
+                                    Float.parseFloat(employeeAttributes[5]),
+                                    Integer.parseInt(employeeAttributes[6]),
+                                    Integer.parseInt(employeeAttributes[7]),
+                                    Integer.parseInt(employeeAttributes[8])
+                            ),1));
+                            
                             break;
                         default:
                             //for debugging purposes
@@ -1060,6 +1115,13 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
 
         //checks if error free
         if (error.length() == 0) {
+            
+            //removes the current employee if user is modifying (in order to avoid conflicts)
+            if (employeeFormPanel.getTitle().equals(MODIFY_EMPLOYEE_TITLE)) {
+
+                menuHashTable.removeEmployee(objToInt(employeeNumberField.getValue()));
+            }
+        
             //checks which employee type panel was currently selected
             if (employeeTypePanel.getSelectedComponent() == fullTimeEmployeePanel) {
 
@@ -1073,6 +1135,30 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                         objToDouble(deductionsRateField.getValue()),
                         workLocationField.getSelectedIndex()
                 ));
+                if (employeeFormPanel.getTitle().equals(MODIFY_EMPLOYEE_TITLE)) {
+                    //adds to archived employee table
+                    undoEmployees.add(new ArchivedEmployee(undoEmployees.getLast().getEmployee1(),3,new FullTimeEmployee(
+                            objToInt(employeeNumberField.getValue()),
+                            firstNameField.getText(),
+                            lastNameField.getText(),
+                            sexField.getSelectedIndex(),
+                            objToDouble(annualSalaryField.getValue()),
+                            objToDouble(deductionsRateField.getValue()),
+                            workLocationField.getSelectedIndex()
+                    )));
+                    undoEmployees.remove(undoEmployees.size()-2);
+                } else{
+                    //adds to archived employee table
+                    undoEmployees.add(new ArchivedEmployee(new FullTimeEmployee(
+                            objToInt(employeeNumberField.getValue()),
+                            firstNameField.getText(),
+                            lastNameField.getText(),
+                            sexField.getSelectedIndex(),
+                            objToDouble(annualSalaryField.getValue()),
+                            objToDouble(deductionsRateField.getValue()),
+                            workLocationField.getSelectedIndex()
+                    ),1));
+                }
             } else if (employeeTypePanel.getSelectedComponent() == partTimeEmployeePanel) {
 
                 //adds a part time employee
@@ -1087,6 +1173,35 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                         objToInt(hoursPerWeekField.getValue()),
                         objToInt(weeksPerYearField.getValue())
                 ));
+                
+                if (employeeFormPanel.getTitle().equals(MODIFY_EMPLOYEE_TITLE)) {
+                    //adds to archived employee table
+                    undoEmployees.add(new ArchivedEmployee(undoEmployees.getLast().getEmployee1(),3,new PartTimeEmployee(
+                        objToInt(employeeNumberField.getValue()),
+                        firstNameField.getText(),
+                        lastNameField.getText(),
+                        sexField.getSelectedIndex(),
+                        objToDouble(hourlyWageField.getValue()),
+                        objToDouble(deductionsRateField.getValue()),
+                        workLocationField.getSelectedIndex(),
+                        objToInt(hoursPerWeekField.getValue()),
+                        objToInt(weeksPerYearField.getValue())
+                )));
+                    undoEmployees.remove(undoEmployees.size()-2);
+                } else{
+                    //adds to archived employee table
+                    undoEmployees.add(new ArchivedEmployee(new PartTimeEmployee(
+                        objToInt(employeeNumberField.getValue()),
+                        firstNameField.getText(),
+                        lastNameField.getText(),
+                        sexField.getSelectedIndex(),
+                        objToDouble(hourlyWageField.getValue()),
+                        objToDouble(deductionsRateField.getValue()),
+                        workLocationField.getSelectedIndex(),
+                        objToInt(hoursPerWeekField.getValue()),
+                        objToInt(weeksPerYearField.getValue())
+                ),1));
+                }
             }
 
             //updates the table and hides the popup
@@ -1096,6 +1211,13 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
         } //handles errors and prompts with all errors
         else {
             JOptionPane.showMessageDialog(new JFrame(), error, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+                                             
+        if (!undoEmployees.isEmpty()){
+            System.out.println("Archived List:");
+            for (ArchivedEmployee a : undoEmployees){
+                System.out.println("name: " + a.getEmployee1().getFirstName() + ", type: " + a.getActionType());
+            }
         }
     }//GEN-LAST:event_saveButtonActionPerformed
 
@@ -1120,6 +1242,8 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 //finds the selected employee
                 EmployeeInfo employeeToEdit = menuHashTable.getEmployee(objToInt(EmployeeTable.getValueAt(EmployeeTable.getSelectedRow(), 2)));
 
+                undoEmployees.add(new ArchivedEmployee(employeeToEdit,3));
+                
                 //sets fields of popup to selected employee's attributes
                 firstNameField.setText(employeeToEdit.getFirstName());
                 lastNameField.setText(employeeToEdit.getLastName());
@@ -1146,7 +1270,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
                 employeeFormPanel.setTitle(MODIFY_EMPLOYEE_TITLE);
 
                 //disables the employee number field (because that would constitute making a new employee)
-                employeeNumberField.setEnabled(false);
+                //employeeNumberField.setEnabled(false);
 
                 //displays popup
                 employeeFormPanel.setVisible(true);
@@ -1158,6 +1282,13 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
             //handles multiple employee selection
         } else {
             JOptionPane.showMessageDialog(new JFrame(), SELECTION_ERROR_SINGLE_ONLY);
+        }
+                                             
+        if (!undoEmployees.isEmpty()){
+            System.out.println("Archived List:");
+            for (ArchivedEmployee a : undoEmployees){
+                System.out.println("name: " + a.getEmployee1().getFirstName() + ", type: " + a.getActionType());
+            }
         }
     }//GEN-LAST:event_jButton_EditActionPerformed
 
@@ -1208,7 +1339,9 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
             //confirms with user before deleting
             if (YesNoPrompt("Confirm Deletion", confirmText) == JOptionPane.YES_OPTION) {
                 for (int b : employeesToRemove) {
-                    //removes employee selected
+                    //moves employee to deletedEmployees
+                    undoEmployees.add(new ArchivedEmployee(menuHashTable.getEmployee(b),2));
+                    //removes employee selected from main table
                     menuHashTable.removeEmployee(b);
                 }
                 //updates table
@@ -1219,6 +1352,13 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
             //handles invalid selection
         } else {
             JOptionPane.showMessageDialog(new JFrame(), SELECTION_ERROR_ATLEAST_ONE);
+        }
+                                             
+        if (!undoEmployees.isEmpty()){
+            System.out.println("Archived List:");
+            for (ArchivedEmployee a : undoEmployees){
+                System.out.println("name: " + a.getEmployee1().getFirstName() + ", type: " + a.getActionType());
+            }
         }
     }//GEN-LAST:event_jButton_RemoveActionPerformed
 
@@ -1256,6 +1396,76 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
             Logger.getLogger(JFrame_EmployeeDatabase_GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItem_GuideActionPerformed
+
+    private void undoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoActionPerformed
+        if (!undoEmployees.isEmpty()){
+            System.out.println("Before Undo Archived List:");
+            for (ArchivedEmployee a : undoEmployees){
+                System.out.println("name: " + a.getEmployee1().getFirstName() + ", type: " + a.getActionType());
+            }
+            switch(undoEmployees.getLast().getActionType()){
+                case 1:
+                    menuHashTable.removeEmployee(undoEmployees.getLast().getEmployee1().getEmployeeNumber());
+                    break;
+                case 2:
+                    menuHashTable.addEmployee(undoEmployees.getLast().getEmployee1());
+                    break;
+                case 3:
+                    if (undoEmployees.getLast().getEmployee2() != null){
+                        menuHashTable.removeEmployee(undoEmployees.getLast().getEmployee2().getEmployeeNumber());
+                        menuHashTable.addEmployee(undoEmployees.getLast().getEmployee1());
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid Case");
+                    break;
+            }
+            redoEmployees.add(undoEmployees.getLast());
+            undoEmployees.removeLast();
+            changesMade(true);
+            refreshTable(menuHashTable);
+            
+            System.out.println("After Undo Archived List:");
+            for (ArchivedEmployee a : undoEmployees){
+                System.out.println("name: " + a.getEmployee1().getFirstName() + ", type: " + a.getActionType());
+            }
+        }
+    }//GEN-LAST:event_undoActionPerformed
+
+    private void redoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_redoActionPerformed
+        if (!redoEmployees.isEmpty()){
+            System.out.println("Before Redo Archived List:");
+            for (ArchivedEmployee a : redoEmployees){
+                System.out.println("name: " + a.getEmployee1().getFirstName() + ", type: " + a.getActionType());
+            }
+            switch(redoEmployees.getLast().getActionType()){
+                case 1:
+                    menuHashTable.addEmployee(redoEmployees.getLast().getEmployee1());
+                    break;
+                case 2:
+                    menuHashTable.removeEmployee(redoEmployees.getLast().getEmployee1().getEmployeeNumber());
+                    break;
+                case 3:
+                    if (redoEmployees.getLast().getEmployee1() != null){
+                        menuHashTable.removeEmployee(redoEmployees.getLast().getEmployee1().getEmployeeNumber());
+                        menuHashTable.addEmployee(redoEmployees.getLast().getEmployee2());
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid Case");
+                    break;
+            }
+            undoEmployees.add(redoEmployees.getLast());
+            redoEmployees.removeLast();
+            changesMade(true);
+            refreshTable(menuHashTable);
+            
+            System.out.println("After Redo Archived List:");
+            for (ArchivedEmployee a : redoEmployees){
+                System.out.println("name: " + a.getEmployee1().getFirstName() + ", type: " + a.getActionType());
+            }
+        }
+    }//GEN-LAST:event_redoActionPerformed
 
     //main method initializes the application and sets the look and feel
     public static void main(String args[]) {
@@ -1319,6 +1529,7 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton_Edit;
     private javax.swing.JButton jButton_Refresh;
     private javax.swing.JButton jButton_Remove;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem_Guide;
     private javax.swing.JMenu jMenu_File;
     private javax.swing.JMenu jMenu_File1;
@@ -1333,12 +1544,14 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     private javax.swing.JLabel lastNameLabel;
     private javax.swing.JPanel mainInterface;
     private javax.swing.JPanel partTimeEmployeePanel;
+    private javax.swing.JMenuItem redo;
     private javax.swing.JButton saveButton;
     private javax.swing.JTextField searchBar;
     private javax.swing.JButton searchButton;
     private javax.swing.JComboBox<String> searchType;
     private javax.swing.JComboBox<String> sexField;
     private javax.swing.JLabel sexLabel;
+    private javax.swing.JMenuItem undo;
     private javax.swing.JSpinner weeksPerYearField;
     private javax.swing.JLabel weeksPerYearLabel;
     private javax.swing.JComboBox<String> workLocationField;

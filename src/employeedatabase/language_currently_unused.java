@@ -5,11 +5,7 @@
  */
 package employeedatabase;
 
-/**
- *
- * @author Ghazala
- */
-public enum language {
+public enum language_currently_unused {
     //setting constants for file formatting
     DELIMITER(","),
     FILE_EXTENSION("dutton"),
@@ -46,7 +42,7 @@ public enum language {
     SELECTION_ERROR_ATLEAST_ONE("You must have at least one employee selected from the table");
     
     private final String text;
-    language (String text){
+    language_currently_unused (String text){
         this.text = text;
     }
     public String getValue(){
