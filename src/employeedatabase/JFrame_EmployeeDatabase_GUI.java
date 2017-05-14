@@ -1256,6 +1256,9 @@ public class JFrame_EmployeeDatabase_GUI extends javax.swing.JFrame {
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         //hides the popup
         employeeFormPanel.setVisible(false);
+        if (employeeFormPanel.getTitle().equals(MODIFY_EMPLOYEE_TITLE)) {
+            undoEmployees.removeLast();
+        }
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void workLocationFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_workLocationFieldActionPerformed
